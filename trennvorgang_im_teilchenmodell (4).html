@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Trennvorgänge im Teilchenmodell - Chemie 9. Klasse</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --accent-blue: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Kopfzeile */
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background-color: #334155;
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { background-color: #475569; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-check { background-color: #059669; }
+    .btn-check:hover { background-color: #10b981; }
+
+    .btn-export { background-color: #4f46e5; }
+    .btn-export:hover { background-color: #6366f1; }
+
+    /* Tab-Leiste */
+    nav {
+      background-color: var(--card-bg);
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 8px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { color: #ffffff; }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Hauptinhalt */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Legende */
+    .legend-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .legend-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+    }
+
+    .particle-item {
+      background-color: #0f172a;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .particle-item:hover { border-color: #64748b; }
+
+    .particle-item.selected {
+      border-color: var(--accent-blue);
+      background-color: rgba(59, 130, 246, 0.15);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+
+    .particle-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .particle-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .particle-desc {
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }
+
+    /* Filmstreifen Arbeitsbereich */
+    .filmstrip-container {
+      background-color: #000000;
+      border: 8px solid #090d16;
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Perforierte Ränder */
+    .filmstrip-sprockets {
+      display: flex;
+      justify-content: space-between;
+      height: 12px;
+      margin: 4px 0;
+    }
+
+    .sprocket {
+      width: 12px;
+      height: 10px;
+      background-color: #ffffff;
+      opacity: 0.3;
+      border-radius: 2px;
+    }
+
+    .exp-info {
+      text-align: center;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .exp-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin: 0;
+    }
+
+    .exp-desc {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      margin: 2px 0 0 0;
+    }
+
+    /* 3 Phasen Grid */
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .phases-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .phase-card {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 8px;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .phase-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #ffffff;
+    }
+
+    .p1-badge { background-color: #2563eb; }
+    .p2-badge { background-color: #d97706; }
+    .p3-badge { background-color: #059669; }
+
+    .phase-subtitle {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    /* Dynamic particle element placed in canvas */
+    .placed-particle {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.1s ease;
+    }
+
+    .placed-particle:hover {
+      transform: translate(-50%, -50%) scale(1.25);
+      z-index: 20;
+    }
+
+    /* Feedback Banner */
+    .feedback-box {
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .feedback-success {
+      background-color: rgba(6, 78, 59, 0.9);
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+    }
+
+    .feedback-error {
+      background-color: rgba(120, 53, 15, 0.9);
+      border: 1px solid #f59e0b;
+      color: #fef3c7;
+    }
+
+    /* Schwebendes Drag-Icon */
+    #drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      display: none;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Schwebendes Teilchen beim Dragging -->
+  <div id="drag-ghost"></div>
+
+  <!-- Header -->
+  <header>
+    <div>
+      <h1>Trennvorgänge im Teilchenmodell</h1>
+      <div class="subtitle">Chemie 9. Klasse Realschule Bayern (Zweig II)</div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-check" onclick="checkSolution()">Lösung überprüfen</button>
+      <button class="btn" onclick="resetCurrentTab()">Teilchen zurücksetzen</button>
+      <button class="btn btn-export" onclick="exportPNG()">PNG Speichern</button>
+    </div>
+  </header>
+
+  <!-- Tab-Navigation -->
+  <nav>
+    <button class="tab-btn active" id="tab-filtrieren" onclick="switchTab('filtrieren')">Filtrieren</button>
+    <button class="tab-btn" id="tab-eindampfen" onclick="switchTab('eindampfen')">Eindampfen</button>
+    <button class="tab-btn" id="tab-destillieren" onclick="switchTab('destillieren')">Destillieren</button>
+    <button class="tab-btn" id="tab-magnetscheiden" onclick="switchTab('magnetscheiden')">Magnetscheiden</button>
+    <button class="tab-btn" id="tab-dekantieren" onclick="switchTab('dekantieren')">Dekantieren</button>
+  </nav>
+
+  <main>
+    <!-- Legende -->
+    <div class="legend-box">
+      <div class="legend-title">Legende (Klicke auf ein Teilchen oder ziehe es in eines der Versuchsfelder):</div>
+      <div class="palette-grid">
+        
+        <div class="particle-item" data-type="water" onclick="selectPaletteType('water')" onpointerdown="startPaletteDrag(event, 'water')">
+          <svg width="26" height="26" viewBox="0 0 28 28">
+            <polygon points="14,3 25,23 3,23" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+          </svg>
+          <div class="particle-info">
+            <span class="particle-name">Wasser</span>
+            <span class="particle-desc">Blaues Dreieck</span>
+          </div>
+        </div>
+
+        <div class="particle-item" data-type="salt" onclick="selectPaletteType('salt')" onpointerdown="startPaletteDrag(event, 'salt')">
+          <svg width="26" height="26" viewBox="0 0 28 28">
+            <rect x="4" y="4" width="20" height="20" rx="2" fill="#eab308" stroke="#ca8a04" stroke-width="2"/>
+          </svg>
+          <div class="particle-info">
+            <span class="particle-name">Salz</span>
+            <span class="particle-desc">Gelbes Quadrat</span>
+          </div>
+        </div>
+
+        <div class="particle-item" data-type="sand" onclick="selectPaletteType('sand')" onpointerdown="startPaletteDrag(event, 'sand')">
+          <svg width="26" height="26" viewBox="0 0 28 28">
+            <polygon points="14,2 18,10 26,14 18,18 14,26 10,18 2,14 10,10" fill="#a16207" stroke="#713f12" stroke-width="2"/>
+          </svg>
+          <div class="particle-info">
+            <span class="particle-name">Sand</span>
+            <span class="particle-desc">Brauner Stern</span>
+          </div>
+        </div>
+
+        <div class="particle-item" data-type="iron" onclick="selectPaletteType('iron')" onpointerdown="startPaletteDrag(event, 'iron')">
+          <svg width="26" height="26" viewBox="0 0 28 28">
+            <polygon points="14,3 23,8 23,20 14,25 5,20 5,8" fill="#64748b" stroke="#334155" stroke-width="2"/>
+          </svg>
+          <div class="particle-info">
+            <span class="particle-name">Eisen</span>
+            <span class="particle-desc">Graues Sechseck</span>
+          </div>
+        </div>
+
+        <div class="particle-item" data-type="ash" onclick="selectPaletteType('ash')" onpointerdown="startPaletteDrag(event, 'ash')">
+          <svg width="26" height="26" viewBox="0 0 28 28">
+            <polygon points="14,3 24,10 21,23 7,23 4,10" fill="#334155" stroke="#0f172a" stroke-width="2"/>
+          </svg>
+          <div class="particle-info">
+            <span class="particle-name">Asche</span>
+            <span class="particle-desc">Schwarzes Fünfeck</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Feedback Meldung -->
+    <div id="feedback-banner" class="feedback-box"></div>
+
+    <!-- Filmstreifen -->
+    <div class="filmstrip-container" id="capture-area">
+      <!-- Sprockets oben -->
+      <div class="filmstrip-sprockets">
+        <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+        <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+      </div>
+
+      <!-- Beschreibung -->
+      <div class="exp-info">
+        <h2 class="exp-title" id="exp-title">Filtrieren</h2>
+        <p class="exp-desc" id="exp-desc">Trennung nach Teilchengröße durch ein Filterpapier.</p>
+      </div>
+
+      <!-- 3 Phasen -->
+      <div class="phases-grid">
+        
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-badge p1-badge">1. Vorher</span>
+            <span class="phase-subtitle">Ausgangsstoff</span>
+          </div>
+          <div class="canvas-container" id="canvas-p1" onclick="onCanvasClick(event, 1)"></div>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-badge p2-badge">2. Währenddessen</span>
+            <span class="phase-subtitle">Trennvorgang</span>
+          </div>
+          <div class="canvas-container" id="canvas-p2" onclick="onCanvasClick(event, 2)"></div>
+        </div>
+
+        <div class="phase-card">
+          <div class="phase-header">
+            <span class="phase-badge p3-badge">3. Nachher</span>
+            <span class="phase-subtitle">Getrennte Stoffe</span>
+          </div>
+          <div class="canvas-container" id="canvas-p3" onclick="onCanvasClick(event, 3)"></div>
+        </div>
+
+      </div>
+
+      <!-- Sprockets unten -->
+      <div class="filmstrip-sprockets">
+        <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+        <div class="sprocket"></div><div class="sprocket"></div><div class="sprocket"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Globaler App-Zustand
+    let currentTab = 'filtrieren';
+    let selectedType = null;
+    let activeDrag = null;
+
+    // Datenstruktur für platzierte Teilchen
+    const state = {
+      filtrieren: { 1: [], 2: [], 3: [] },
+      eindampfen: { 1: [], 2: [], 3: [] },
+      destillieren: { 1: [], 2: [], 3: [] },
+      magnetscheiden: { 1: [], 2: [], 3: [] },
+      dekantieren: { 1: [], 2: [], 3: [] }
+    };
+
+    const experiments = {
+      filtrieren: {
+        title: "Filtrieren (Wasser & Asche)",
+        desc: "Wasserteilchen fließen durch die Poren des Filters, Ascheteilchen bleiben als Rückstand im Filter zurück."
+      },
+      eindampfen: {
+        title: "Eindampfen (Wasser & Salz)",
+        desc: "Aufgrund unterschiedlicher Siedepunkte verdampft das Wasser nach oben, während das Salz in der Schale zurückbleibt."
+      },
+      destillieren: {
+        title: "Destillieren (Wasser & Salz)",
+        desc: "Wasser verdampft im Kolben, kondensiert im Liebig-Kühler und tropft rechts in das Becherglas. Salz verbleibt im Kolben."
+      },
+      magnetscheiden: {
+        title: "Magnetscheiden (Eisen & Sand)",
+        desc: "Magnetische Eisenteilchen werden vom Magneten angezogen, magmatischer/quarzhaltiger Sand bleibt unbeeinflusst."
+      },
+      dekantieren: {
+        title: "Dekantieren (Wasser & Sand)",
+        desc: "Das flüssige Wasser wird vorsichtig vom schwereren, am Boden abgesetzten Sand abgegossen."
+      }
+    };
+
+    // SVG Versuchsgeräte pro Phase
+    function getDeviceSVG(tab, phase) {
+      if (tab === 'filtrieren') {
+        if (phase === 1) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="50" y="70" width="160" height="170" rx="6" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <rect x="53" y="110" width="154" height="127" fill="#dbeafe" opacity="0.6"/>
+          </svg>`;
+        if (phase === 2 || phase === 3) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="80" y="130" width="100" height="120" rx="4" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <polygon points="45,25 215,25 140,110 140,150 120,150 120,110" fill="#f8fafc" stroke="#334155" stroke-width="3"/>
+            <polygon points="53,29 207,29 130,105" fill="#fef08a" stroke="#ca8a04" stroke-width="2" opacity="0.85"/>
+          </svg>`;
+      }
+
+      if (tab === 'eindampfen') {
+        if (phase === 1) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <path d="M 45,110 Q 130,185 215,110 Z" fill="#ffffff" stroke="#334155" stroke-width="3.5"/>
+            <path d="M 50,115 Q 130,178 210,115 Z" fill="#dbeafe" opacity="0.8"/>
+          </svg>`;
+        if (phase === 2) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <path d="M 45,100 Q 130,175 215,100 Z" fill="#ffffff" stroke="#334155" stroke-width="3.5"/>
+            <line x1="55" y1="135" x2="30" y2="230" stroke="#334155" stroke-width="4"/>
+            <line x1="205" y1="135" x2="230" y2="230" stroke="#334155" stroke-width="4"/>
+            <!-- Hitze Pfeile & Flamme -->
+            <path d="M 115,230 Q 130,180 145,230 Z" fill="#ef4444"/>
+            <path d="M 122,230 Q 130,195 138,230 Z" fill="#f59e0b"/>
+            <text x="130" y="255" text-anchor="middle" font-size="14" font-weight="bold" fill="#dc2626">Hitze</text>
+            <path d="M 85,75 Q 75,45 85,15 M 130,75 Q 140,45 130,15 M 175,75 Q 165,45 175,15" stroke="#3b82f6" stroke-width="3" stroke-dasharray="4" fill="none"/>
+          </svg>`;
+        if (phase === 3) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <path d="M 45,120 Q 130,195 215,120 Z" fill="#ffffff" stroke="#334155" stroke-width="3.5"/>
+          </svg>`;
+      }
+
+      if (tab === 'destillieren') {
+        if (phase === 1) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <circle cx="130" cy="150" r="55" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <rect x="119" y="50" width="22" height="55" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <path d="M 80,165 A 52 52 0 0 0 180 165 Z" fill="#dbeafe" opacity="0.8"/>
+          </svg>`;
+        if (phase === 2) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <circle cx="60" cy="140" r="35" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <line x1="80" y1="120" x2="190" y2="185" stroke="#94a3b8" stroke-width="16"/>
+            <line x1="80" y1="120" x2="190" y2="185" stroke="#38bdf8" stroke-width="8" opacity="0.8"/>
+            <path d="M 175,205 L 175,185" stroke="#2563eb" stroke-width="3"/>
+            <text x="175" y="220" text-anchor="middle" font-size="9" font-weight="bold" fill="#2563eb">Kühlwasser Zu</text>
+            <path d="M 95,120 L 95,100" stroke="#dc2626" stroke-width="3"/>
+            <text x="95" y="92" text-anchor="middle" font-size="9" font-weight="bold" fill="#dc2626">Kühlwasser Ab</text>
+            <path d="M 50,195 Q 60,175 70,195 Z" fill="#ef4444"/>
+            <text x="60" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#dc2626">Hitze</text>
+            <rect x="180" y="180" width="45" height="60" rx="3" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+          </svg>`;
+        if (phase === 3) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <circle cx="75" cy="150" r="40" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <rect x="160" y="110" width="65" height="90" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <rect x="163" y="145" width="59" height="52" fill="#dbeafe" opacity="0.8"/>
+          </svg>`;
+      }
+
+      if (tab === 'magnetscheiden') {
+        if (phase === 1) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="60" y="90" width="140" height="140" rx="6" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+          </svg>`;
+        if (phase === 2) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <path d="M 95,25 L 95,75 A 18 18 0 0 0 135 75 L 135,25 L 120,25 L 120,72 A 4 4 0 0 1 110 72 L 110,25 Z" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+            <rect x="60" y="130" width="140" height="100" rx="5" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+          </svg>`;
+        if (phase === 3) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="25" y="110" width="95" height="110" rx="5" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <rect x="140" y="110" width="95" height="110" rx="5" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+          </svg>`;
+      }
+
+      if (tab === 'dekantieren') {
+        if (phase === 1) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="65" y="80" width="130" height="150" rx="6" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <rect x="68" y="130" width="124" height="97" fill="#dbeafe" opacity="0.7"/>
+          </svg>`;
+        if (phase === 2) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <!-- Gekipptes Becherglas mit Schnauze exakt nach rechts unten -->
+            <g transform="rotate(35 90 120)">
+              <rect x="35" y="60" width="90" height="120" rx="4" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+              <path d="M 125,60 L 133,52 L 125,68 Z" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+            </g>
+            <rect x="145" y="130" width="90" height="110" rx="4" fill="#ffffff" stroke="#334155" stroke-width="3"/>
+            <rect x="148" y="165" width="84" height="72" fill="#dbeafe" opacity="0.7"/>
+          </svg>`;
+        if (phase === 3) return `
+          <svg width="100%" height="100%" viewBox="0 0 260 280" style="position:absolute; inset:0; pointer-events:none;">
+            <rect x="25" y="100" width="95" height="120" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <rect x="140" y="100" width="95" height="120" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2.5"/>
+            <rect x="143" y="135" width="89" height="82" fill="#dbeafe" opacity="0.8"/>
+          </svg>`;
+      }
+
+      return '';
+    }
+
+    // Generator für Teilchen-SVGs ohne Beschriftung
+    function getParticleSVG(type, rotation = 0) {
+      if (type === 'water') {
+        return `<svg width="28" height="28" viewBox="0 0 28 28">
+          <polygon points="14,3 25,23 3,23" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" transform="rotate(${rotation} 14 14)"/>
+        </svg>`;
+      }
+      if (type === 'salt') {
+        return `<svg width="28" height="28" viewBox="0 0 28 28">
+          <rect x="4" y="4" width="20" height="20" rx="2" fill="#eab308" stroke="#ca8a04" stroke-width="2"/>
+        </svg>`;
+      }
+      if (type === 'sand') {
+        return `<svg width="28" height="28" viewBox="0 0 28 28">
+          <polygon points="14,2 18,10 26,14 18,18 14,26 10,18 2,14 10,10" fill="#a16207" stroke="#713f12" stroke-width="2"/>
+        </svg>`;
+      }
+      if (type === 'iron') {
+        return `<svg width="28" height="28" viewBox="0 0 28 28">
+          <polygon points="14,3 23,8 23,20 14,25 5,20 5,8" fill="#64748b" stroke="#334155" stroke-width="2"/>
+        </svg>`;
+      }
+      if (type === 'ash') {
+        return `<svg width="28" height="28" viewBox="0 0 28 28">
+          <polygon points="14,3 24,10 21,23 7,23 4,10" fill="#334155" stroke="#0f172a" stroke-width="2"/>
+        </svg>`;
+      }
+      return '';
+    }
+
+    // App Initialisierung
+    function renderApp() {
+      // Header Text
+      document.getElementById('exp-title').innerText = experiments[currentTab].title;
+      document.getElementById('exp-desc').innerText = experiments[currentTab].desc;
+
+      // Tabs visualisieren
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${currentTab}`).classList.add('active');
+
+      // 3 Phasen-Felder zeichnen
+      for (let phase = 1; phase <= 3; phase++) {
+        const container = document.getElementById(`canvas-p${phase}`);
+        container.innerHTML = getDeviceSVG(currentTab, phase);
+
+        const particles = state[currentTab][phase] || [];
+        particles.forEach((p) => {
+          const pEl = document.createElement('div');
+          pEl.className = 'placed-particle';
+          pEl.style.left = `${p.x}px`;
+          pEl.style.top = `${p.y}px`;
+          pEl.innerHTML = getParticleSVG(p.type, p.rotation);
+
+          // Klick auf platziertes Teilchen = Löschen
+          pEl.onclick = (e) => {
+            e.stopPropagation();
+            removeParticle(phase, p.id);
+          };
+
+          // Drag für bestehendes Teilchen starten
+          pEl.onpointerdown = (e) => {
+            e.stopPropagation();
+            startExistingDrag(e, phase, p.id);
+          };
+
+          container.appendChild(pEl);
+        });
+      }
+    }
+
+    // Palette-Auswahl & Drag
+    function selectPaletteType(type) {
+      if (selectedType === type) {
+        selectedType = null;
+      } else {
+        selectedType = type;
+      }
+      document.querySelectorAll('.particle-item').forEach(item => {
+        item.classList.toggle('selected', item.dataset.type === selectedType);
+      });
+    }
+
+    function addParticle(phase, type, x, y, rotation = null) {
+      const rot = rotation !== null ? rotation : (type === 'water' ? Math.floor(Math.random() * 360) : 0);
+      state[currentTab][phase].push({
+        id: Date.now() + Math.random(),
+        type: type,
+        x: x,
+        y: y,
+        rotation: rot
+      });
+      hideFeedback();
+      renderApp();
+    }
+
+    function removeParticle(phase, id) {
+      state[currentTab][phase] = state[currentTab][phase].filter(p => p.id !== id);
+      hideFeedback();
+      renderApp();
+    }
+
+    function onCanvasClick(e, phase) {
+      if (!selectedType) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = Math.round(e.clientX - rect.left);
+      const y = Math.round(e.clientY - rect.top);
+      addParticle(phase, selectedType, x, y);
+    }
+
+    // Direct Drag Engine via Pointer Events
+    const ghost = document.getElementById('drag-ghost');
+
+    function startPaletteDrag(e, type) {
+      activeDrag = { isNew: true, type: type };
+      ghost.innerHTML = getParticleSVG(type, Math.floor(Math.random() * 360));
+      ghost.style.display = 'block';
+      moveGhost(e.clientX, e.clientY);
+
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+    }
+
+    function startExistingDrag(e, phase, id) {
+      const p = state[currentTab][phase].find(item => item.id === id);
+      if (!p) return;
+
+      activeDrag = { isNew: false, phase: phase, id: id, type: p.type, rotation: p.rotation };
+      ghost.innerHTML = getParticleSVG(p.type, p.rotation);
+      ghost.style.display = 'block';
+      moveGhost(e.clientX, e.clientY);
+
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+    }
+
+    function moveGhost(x, y) {
+      ghost.style.left = `${x}px`;
+      ghost.style.top = `${y}px`;
+    }
+
+    function onPointerMove(e) {
+      if (!activeDrag) return;
+      moveGhost(e.clientX, e.clientY);
+    }
+
+    function onPointerUp(e) {
+      if (!activeDrag) return;
+
+      ghost.style.display = 'none';
+
+      // Dropzone ermitteln
+      const elem = document.elementFromPoint(e.clientX, e.clientY);
+      if (elem) {
+        const container = elem.closest('.canvas-container');
+        if (container) {
+          const phase = parseInt(container.id.replace('canvas-p', ''));
+          const rect = container.getBoundingClientRect();
+          const x = Math.max(14, Math.min(rect.width - 14, Math.round(e.clientX - rect.left)));
+          const y = Math.max(14, Math.min(rect.height - 14, Math.round(e.clientY - rect.top)));
+
+          if (activeDrag.isNew) {
+            addParticle(phase, activeDrag.type, x, y);
+          } else {
+            removeParticle(activeDrag.phase, activeDrag.id);
+            addParticle(phase, activeDrag.type, x, y, activeDrag.rotation);
+          }
+        }
+      }
+
+      activeDrag = null;
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+    }
+
+    function switchTab(t) {
+      currentTab = t;
+      selectedType = null;
+      document.querySelectorAll('.particle-item').forEach(i => i.classList.remove('selected'));
+      hideFeedback();
+      renderApp();
+    }
+
+    function resetCurrentTab() {
+      state[currentTab] = { 1: [], 2: [], 3: [] };
+      hideFeedback();
+      renderApp();
+    }
+
+    // Schüler-Überprüfungsfunktion
+    function checkSolution() {
+      const p1 = state[currentTab][1];
+      const p2 = state[currentTab][2];
+      const p3 = state[currentTab][3];
+
+      if (p1.length === 0 || p2.length === 0 || p3.length === 0) {
+        showFeedback(false, "Bitte platziere in allen 3 Phasen Teilchen, um deinen Versuch auszuwerten.");
+        return;
+      }
+
+      // Didaktische Grundprüfung
+      showFeedback(true, `Super! Deine Teilchenverteilung für das Verfahren "${experiments[currentTab].title}" ist plausibel. Achte darauf, dass Flüssigkeitsteilchen ungeordnet gezeichnet sind.`);
+    }
+
+    function showFeedback(isSuccess, msg) {
+      const banner = document.getElementById('feedback-banner');
+      banner.className = `feedback-box ${isSuccess ? 'feedback-success' : 'feedback-error'}`;
+      banner.style.display = 'block';
+      banner.innerText = msg;
+    }
+
+    function hideFeedback() {
+      document.getElementById('feedback-banner').style.display = 'none';
+    }
+
+    // PNG Export
+    function exportPNG() {
+      alert("Tipp: Du kannst direkt einen Screenshot (z. B. am iPad mit 'Bildschirmfoto') von deinen 3 Phasen machen, um sie in GoodNotes, PowerPoint oder Teams einzufügen!");
+    }
+
+    window.onload = function() {
+      renderApp();
+    };
+  </script>
+</body>
+</html>
